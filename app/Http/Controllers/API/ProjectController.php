@@ -10,24 +10,45 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProjectController extends Controller
 {
+    public function index()
+    {
+        return view('upload');
+    }
     public function store(Request $request)
     {
         $project = new Project;
+
+        $request->validate([
+            'name' => 'required',
+            'categoryId' => 'required',
+            'discription' => 'required',
+            'init_date' => 'required',
+            'completion_date' => 'required',
+            'project_image' => 'required|mimes:jpeg,png',
+        ]);
 
         if (Project::all()->count() > 0) {
             $projectId = Project::latest()->first()->id;
         } else {
             $projectId = 0;
         }
-        $name = $request->input('name');
-        $slug = Str::slug($name, '-') . '-' . $projectId + 1;
-        $categoryId=$request->input('categoryId');
-        $discription=$request->input('discription');
-        $initial_date=$request->input('init_date');
-        $completion_date=$request->input('completion_date');
-        $links=$request->input('links');
-        $project_image=$request->file('project_image');
 
-        $response=Cloudinary::upload($project_image->getRealPath())->getSecurePath();
+        $project->name = $request->input('name');
+        $project->slug = Str::slug($request->input('name'), '-') . '-' . $projectId + 1;
+        $project->category_id = $request->input('categoryId');
+        $project->discription = $request->input('discription');
+        $project->initial_date = $request->input('init_date');
+        $project->completion_date = $request->input('completion_date');
+        $project->links = $request->input('links');
+
+        $project->project_image = Cloudinary::upload($request->file('project_image')->getRealPath())->getSecurePath();
+        foreach ($request->file('images') as $imageFile) 
+        {
+            $uploadedImageUrl = Cloudinary::upload($imageFile->getRealPath())->getSecurePath();
+            $project->images = $project->images + $uploadedImageUrl + ',';
+        }
+
+        $project->save();
+        session()->flash('message','Project uploaded!');
     }
 }
