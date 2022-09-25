@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Project extends Model
 {
     use HasFactory;
-    protected $table='students';
+    protected $table='projects';
     protected $fillable=[
         'name',
         'slug',
@@ -20,4 +20,9 @@ class Project extends Model
         'project_image',
         'market_links'
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

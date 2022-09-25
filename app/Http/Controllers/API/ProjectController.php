@@ -10,10 +10,6 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProjectController extends Controller
 {
-    public function index()
-    {
-        return view('upload');
-    }
     public function store(Request $request)
     {
         $project = new Project;
@@ -24,7 +20,7 @@ class ProjectController extends Controller
             'discription' => 'required',
             'init_date' => 'required',
             'completion_date' => 'required',
-            'project_image' => 'required|mimes:jpeg,png',
+            'project_image' => 'required',
         ]);
 
         if (Project::all()->count() > 0) {
@@ -39,9 +35,9 @@ class ProjectController extends Controller
         $project->discription = $request->input('discription');
         $project->initial_date = $request->input('init_date');
         $project->completion_date = $request->input('completion_date');
-        $project->links = $request->input('links');
+        $project->links = "";
 
-        $project->project_image = Cloudinary::upload($request->file('project_image')->getRealPath())->getSecurePath();
+        // $project->project_image = Cloudinary::upload($request->file('project_image')->getRealPath())->getSecurePath();
         foreach ($request->file('images') as $imageFile) 
         {
             $uploadedImageUrl = Cloudinary::upload($imageFile->getRealPath())->getSecurePath();
@@ -49,6 +45,10 @@ class ProjectController extends Controller
         }
 
         $project->save();
-        session()->flash('message','Project uploaded!');
+        
+        return response()->json([
+            'status'=>200,
+            'message'=>'Project uploaded!'
+        ]);
     }
 }
