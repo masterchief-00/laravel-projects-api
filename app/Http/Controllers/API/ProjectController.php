@@ -20,7 +20,8 @@ class ProjectController extends Controller
             'discription' => 'required',
             'init_date' => 'required',
             'completion_date' => 'required',
-            'project_image' => 'required',
+            'images' => 'required',
+            'images.*' => 'image|mimes:jpeg,png,jpg'
         ]);
 
         if (Project::all()->count() > 0) {
@@ -36,13 +37,13 @@ class ProjectController extends Controller
         $project->initial_date = $request->input('init_date');
         $project->completion_date = $request->input('completion_date');
         $project->links = "";
-
-        // $project->project_image = Cloudinary::upload($request->file('project_image')->getRealPath())->getSecurePath();
+        
         foreach ($request->file('images') as $imageFile) 
         {
             $uploadedImageUrl = Cloudinary::upload($imageFile->getRealPath())->getSecurePath();
             $project->images = $project->images + $uploadedImageUrl + ',';
         }
+        $project->project_image = $request->file('images')[0];
 
         $project->save();
         
