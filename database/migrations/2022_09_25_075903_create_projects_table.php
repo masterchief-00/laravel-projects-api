@@ -23,7 +23,7 @@ return new class extends Migration
                 $table->string('completion_date');
                 $table->text('images');
                 $table->string('project_image');
-                $table->text('market_links')->nullable();
+                $table->text('links')->nullable();
                 $table->timestamps();
         });
     }

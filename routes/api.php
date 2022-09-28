@@ -8,4 +8,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/upload-project',[ProjectController::class,'store']);
+
+// Route::post('/upload-project', [ProjectController::class, 'store']);
+Route::middleware(['cors'])->group(function () {
+    Route::post('/upload-project', [ProjectController::class, 'store']);
+});
+// Route::post('/upload-project', ['middleware' => 'cors' , 'uses'=> 'MyController@Action']

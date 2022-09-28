@@ -20,8 +20,7 @@ class ProjectController extends Controller
             'discription' => 'required',
             'init_date' => 'required',
             'completion_date' => 'required',
-            'images' => 'required',
-            'images.*' => 'image|mimes:jpeg,png,jpg'
+            'images' => 'required'
         ]);
 
         if (Project::all()->count() > 0) {
@@ -37,19 +36,23 @@ class ProjectController extends Controller
         $project->initial_date = $request->input('init_date');
         $project->completion_date = $request->input('completion_date');
         $project->links = "";
-        
-        foreach ($request->file('images') as $imageFile) 
-        {
-            $uploadedImageUrl = Cloudinary::upload($imageFile->getRealPath())->getSecurePath();
-            $project->images = $project->images + $uploadedImageUrl + ',';
+        $prevFiles = "";
+
+        if ($request->has('images')) {
+            foreach ($request->file('images') as $imageFile) {
+                $uploadedImageUrl = Cloudinary::upload($imageFile->getRealPath())->getSecurePath();
+                $project->images = $prevFiles . $uploadedImageUrl . ',';
+                $prevFiles = $prevFiles . $uploadedImageUrl . ",";
+            }
         }
-        $project->project_image = $request->file('images')[0];
+        $allImages = explode(",", $prevFiles);
+        $project->project_image = $allImages[0];
 
         $project->save();
-        
+
         return response()->json([
-            'status'=>200,
-            'message'=>'Project uploaded!'
+            'status' => 200,
+            'message' => 'Project uploaded!'
         ]);
     }
 }
