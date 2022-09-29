@@ -8,10 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
+
 class ProjectController extends Controller
 {
     public function store(Request $request)
     {
+        set_time_limit(0);
         $project = new Project;
 
         $request->validate([
