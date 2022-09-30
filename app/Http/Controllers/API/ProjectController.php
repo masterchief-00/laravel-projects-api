@@ -11,6 +11,44 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProjectController extends Controller
 {
+
+    public function getProjects()
+    {
+        $projects = Project::all();
+        $project=Project::first();
+        $project->visitsCounter()->increment();
+
+        return response()->json([
+            'status' => 200,
+            'projects' => $projects
+        ]);
+    }
+    public function index()
+    {
+        $projects = Project::all();
+        $project=Project::first();
+        $visits = $project->visitsCounter()->count();
+        $api = Cloudinary::admin();
+        $total = $projects->count();
+        $cgi = $projects->where('category_id', '1')->count();
+        $print = $projects->where('category_id', '2')->count();
+        $favorites=$projects->where('favorite','1')->count();
+        $renders = $api->assets(
+            ["resource_type" => "image", "type" => "upload", "max_results" => 500]
+        );
+
+
+        return response()->json([
+            'status' => 200,
+            'total' => $total,
+            'cgi' => $cgi,
+            'print' => $print,
+            'renders' => $renders,
+            'visits' => $visits,
+            'favorites'=>$favorites
+        ]);
+    }
+
     public function store(Request $request)
     {
         set_time_limit(0);

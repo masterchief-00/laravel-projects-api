@@ -9,8 +9,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-// Route::post('/upload-project', [ProjectController::class, 'store']);
 Route::middleware(['cors'])->group(function () {
     Route::post('/upload-project', [ProjectController::class, 'store']);
+    Route::get('/getDetails/monitor',[ProjectController::class,'index']);
+    Route::get('/getDetails/projects',[ProjectController::class,'getProjects']);
+
 });
-// Route::post('/upload-project', ['middleware' => 'cors' , 'uses'=> 'MyController@Action']
+
